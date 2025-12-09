@@ -49,7 +49,7 @@ async function createProject(projectName, options) {
     // Copy all files from npm package
     const sourceDir = path.resolve(__dirname, '..');
     
-    spinner.text = `Copying files from ${sourceDir}...`;
+    //spinner.text = `Copying files from ${sourceDir}...`;
     
     // Files and directories to exclude from copying
     const excludes = [
@@ -65,37 +65,51 @@ async function createProject(projectName, options) {
     // Check what files exist
     const items = await fs.readdir(sourceDir);
     
+    console.log(chalk.gray(`\n  Source: ${sourceDir}`));
+    console.log(chalk.gray(`  Found ${items.length} items: ${items.slice(0, 5).join(', ')}${items.length > 5 ? '...' : ''}\n`));
+    
     if (items.length === 0) {
       spinner.fail(chalk.red('No files found in package!'));
       console.error(chalk.yellow(`Source directory: ${sourceDir}`));
       process.exit(1);
     }
     
+    let copiedCount = 0;
+    
     // Copy all files except excludes
     for (const item of items) {
-      if (excludes.includes(item)) continue;
+      if (excludes.includes(item)) {
+        console.log(chalk.gray(`  Skipping: ${item}`));
+        continue;
+      }
       
       const sourcePath = path.join(sourceDir, item);
       const targetPath = path.join(targetDir, item);
       
       try {
+        const stats = await fs.stat(sourcePath);
+        console.log(chalk.gray(`  Copying ${stats.isDirectory() ? 'dir' : 'file'}: ${item}`));
+        
         await fs.copy(sourcePath, targetPath, {
           filter: (src) => {
             // Don't copy node_modules subdirectories
-            if (src.includes('/node_modules/') || src.includes('\\node_modules\\')) {
+            if (src.includes('/node_modules/') || src.includes('\\\\node_modules\\\\')) {
               return false;
             }
             // Don't copy log files
-            if (src.match(/\.log$/) || src.includes('/logs/') || src.includes('\\logs\\')) {
+            if (src.match(/\\.log$/) || src.includes('/logs/') || src.includes('\\\\logs\\\\')) {
               return false;
             }
             return true;
           }
         });
+        copiedCount++;
       } catch (err) {
-        console.warn(chalk.yellow(`Warning: Could not copy ${item}: ${err.message}`));
+        console.warn(chalk.yellow(`   Warning: Could not copy ${item}: ${err.message}`));
       }
     }
+    
+    console.log(chalk.gray(`\n  Successfully copied ${copiedCount} items\n`));
 
     spinner.succeed(chalk.green('✅ Project structure created'));
 
