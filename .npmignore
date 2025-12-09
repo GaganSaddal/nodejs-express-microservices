@@ -1,35 +1,10 @@
-# Development files
-.vscode/
-.idea/
+# Exclude node_modules from services (they'll be installed fresh in Docker)
+**/node_modules
 
-# Logs (directories will be recreated)
-logs/
+# Exclude log files
+**/logs
 *.log
-npm-debug.log*
 
 # Git
-.git/
-
-# Testing
-coverage/
-.nyc_output/
-
-# Build
-dist/
-build/
-
-# Temporary
-tmp/
-temp/
-*.tmp
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Node modules in services (will be installed fresh)
-**/node_modules/
-
-# NPM publish guides (not needed for installed package)
-GITHUB_SETUP.md
-PUBLISH_SUMMARY.md
+.git
+.gitignore
