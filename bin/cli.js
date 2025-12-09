@@ -41,7 +41,7 @@ async function createProject(projectName, options) {
   }
 
   // Create project directory
-  const spinner = ora('Creating project structure...').start()
+  const spinner = ora('Creating project structure...').start();
   
   try {
     await fs.ensureDir(targetDir);
@@ -49,67 +49,42 @@ async function createProject(projectName, options) {
     // Copy all files from npm package
     const sourceDir = path.resolve(__dirname, '..');
     
-    //spinner.text = `Copying files from ${sourceDir}...`;
+    // Simply copy everything, then remove what we don't want
+    spinner.text = 'Copying files...';
     
-    // Files and directories to exclude from copying
-    const excludes = [
-      'node_modules',  // Don't copy root node_modules
-      'bin',           // Don't copy CLI itself
-      'package.json',  // Don't copy package metadata
-      'package-lock.json',
-      '.git',
-      '.npmignore',
-      'NPM_PUBLISH.md' // Internal docs
-    ];
-
-    // Check what files exist
-    const items = await fs.readdir(sourceDir);
-    
-    console.log(chalk.gray(`\n  Source: ${sourceDir}`));
-    console.log(chalk.gray(`  Found ${items.length} items: ${items.slice(0, 5).join(', ')}${items.length > 5 ? '...' : ''}\n`));
-    
-    if (items.length === 0) {
-      spinner.fail(chalk.red('No files found in package!'));
-      console.error(chalk.yellow(`Source directory: ${sourceDir}`));
-      process.exit(1);
-    }
-    
-    let copiedCount = 0;
-    
-    // Copy all files except excludes
-    for (const item of items) {
-      if (excludes.includes(item)) {
-        console.log(chalk.gray(`  Skipping: ${item}`));
-        continue;
-      }
-      
-      const sourcePath = path.join(sourceDir, item);
-      const targetPath = path.join(targetDir, item);
-      
-      try {
-        const stats = await fs.stat(sourcePath);
-        console.log(chalk.gray(`  Copying ${stats.isDirectory() ? 'dir' : 'file'}: ${item}`));
+    await fs.copy(sourceDir, targetDir, {
+      filter: (src, dest) => {
+        const relativePath = path.relative(sourceDir, src);
         
-        await fs.copy(sourcePath, targetPath, {
-          filter: (src) => {
-            // Don't copy node_modules subdirectories
-            if (src.includes('/node_modules/') || src.includes('\\\\node_modules\\\\')) {
-              return false;
-            }
-            // Don't copy log files
-            if (src.match(/\\.log$/) || src.includes('/logs/') || src.includes('\\\\logs\\\\')) {
-              return false;
-            }
-            return true;
-          }
-        });
-        copiedCount++;
-      } catch (err) {
-        console.warn(chalk.yellow(`   Warning: Could not copy ${item}: ${err.message}`));
+        // Skip these specific items
+        if (relativePath === 'node_modules' || 
+            relativePath === 'bin' ||
+            relativePath === 'package.json' ||
+            relativePath === 'package-lock.json' ||
+            relativePath === '.git' ||
+            relativePath === '.npmignore' ||
+            relativePath === 'NPM_PUBLISH.md') {
+          return false;
+        }
+        
+        // Skip node_modules in any service
+        if (relativePath.includes('node_modules')) {
+          return false;
+        }
+        
+        // Skip log directories
+        if (relativePath.includes('/logs') || relativePath.includes('\\logs')) {
+          return false;
+        }
+        
+        // Skip log files
+        if (relativePath.endsWith('.log')) {
+          return false;
+        }
+        
+        return true;
       }
-    }
-    
-    console.log(chalk.gray(`\n  Successfully copied ${copiedCount} items\n`));
+    });
 
     spinner.succeed(chalk.green('✅ Project structure created'));
 
@@ -138,26 +113,8 @@ async function createProject(projectName, options) {
   } catch (error) {
     spinner.fail(chalk.red('❌ Failed to create project'));
     console.error(chalk.red('\nError:'), error.message);
+    console.error(chalk.gray(error.stack));
     process.exit(1);
-  }
-}
-
-async function copyDirectory(source, target, excludes = []) {
-  const items = await fs.readdir(source);
-
-  for (const item of items) {
-    if (excludes.includes(item)) continue;
-
-    const sourcePath = path.join(source, item);
-    const targetPath = path.join(target, item);
-    const stat = await fs.stat(sourcePath);
-
-    if (stat.isDirectory()) {
-      await fs.ensureDir(targetPath);
-      await copyDirectory(sourcePath, targetPath, excludes);
-    } else {
-      await fs.copy(sourcePath, targetPath);
-    }
   }
 }
 
