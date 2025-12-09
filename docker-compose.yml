@@ -47,8 +47,8 @@ services:
   # Auth Service
   auth-service:
     build:
-      context: .
-      dockerfile: ./auth-service/Dockerfile
+      context: ./auth-service
+      dockerfile: Dockerfile
     container_name: auth-service
     restart: unless-stopped
     ports:
@@ -125,8 +125,8 @@ services:
   # API Gateway
   api-gateway:
     build:
-      context: .
-      dockerfile: ./api-gateway/Dockerfile
+      context: ./api-gateway
+      dockerfile: Dockerfile
     container_name: api-gateway
     restart: unless-stopped
     ports:

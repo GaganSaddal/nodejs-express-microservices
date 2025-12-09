@@ -1,10 +1,10 @@
 # Multi-stage build for production
 FROM node:18-alpine AS builder
 
-WORKDIR /build
+WORKDIR /app
 
 # Copy package files
-COPY auth-service/package*.json ./
+COPY package*.json ./
 
 # Install dependencies
 RUN npm ci --only=production
@@ -19,13 +19,13 @@ RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
 # Copy dependencies from builder
-COPY --from=builder --chown=nodejs:nodejs /build/node_modules ./node_modules
-
-# Copy shared directory
-COPY --chown=nodejs:nodejs shared ../shared
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 
 # Copy application code
-COPY --chown=nodejs:nodejs auth-service .
+COPY --chown=nodejs:nodejs . .
+
+# Copy shared directory from parent
+COPY --chown=nodejs:nodejs ../shared ../shared
 
 # Create logs directory
 RUN mkdir -p logs && chown -R nodejs:nodejs logs

@@ -1,9 +1,9 @@
 # Multi-stage build for production
 FROM node:18-alpine AS builder
 
-WORKDIR /build
+WORKDIR /app
 
-COPY api-gateway/package*.json ./
+COPY package*.json ./
 RUN npm ci --only=production
 
 FROM node:18-alpine
@@ -13,12 +13,13 @@ WORKDIR /app
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-COPY --from=builder --chown=nodejs:nodejs /build/node_modules ./node_modules
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 
-# Copy shared directory
-COPY --chown=nodejs:nodejs shared ../shared
+# Copy application code
+COPY --chown=nodejs:nodejs . .
 
-COPY --chown=nodejs:nodejs api-gateway .
+# Copy shared directory from parent
+COPY --chown=nodejs:nodejs ../shared ../shared
 
 RUN mkdir -p logs && chown -R nodejs:nodejs logs
 
