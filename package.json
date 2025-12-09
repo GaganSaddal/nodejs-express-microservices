@@ -1,6 +1,6 @@
 {
   "name": "create-gs-express-ms",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "🚀 Production-ready Node.js Express microservices boilerplate with MongoDB, Redis, RabbitMQ, and complete authentication",
   "main": "index.js",
   "bin": {
