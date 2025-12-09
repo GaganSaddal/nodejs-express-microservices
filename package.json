@@ -1,0 +1,56 @@
+{
+  "name": "create-gs-express-ms",
+  "version": "1.0.0",
+  "description": "🚀 Production-ready Node.js Express microservices boilerplate with MongoDB, Redis, RabbitMQ, and complete authentication",
+  "main": "index.js",
+  "bin": {
+    "create-gs-express-ms": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "microservices",
+    "boilerplate",
+    "mongodb",
+    "redis",
+    "rabbitmq",
+    "authentication",
+    "jwt",
+    "docker",
+    "api-gateway",
+    "scaffold",
+    "template",
+    "starter"
+  ],
+  "author": "Gagan Saddal",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/nodejs-express-microservices.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YOUR_USERNAME/nodejs-express-microservices/issues"
+  },
+  "homepage": "https://github.com/YOUR_USERNAME/nodejs-express-microservices#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "fs-extra": "^11.2.0",
+    "ora": "^5.4.1",
+    "prompts": "^2.4.2"
+  },
+  "files": [
+    "bin/",
+    "template/",
+    "README.md",
+    "LICENSE"
+  ]
+}

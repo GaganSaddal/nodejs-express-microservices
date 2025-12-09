@@ -1,0 +1,645 @@
+{
+	"info": {
+		"_postman_id": "nodejs-microservices-api",
+		"name": "🚀 Node.js Microservices API",
+		"description": "Complete API collection for Node.js Express Microservices Boilerplate\n\n## Features\n- 🔐 Authentication & Authorization\n- 👤 User Management\n- 📧 Notifications\n- 🔄 Auto token refresh\n\n## Quick Start\n1. Select the **Local** environment\n2. Run the **🔐 Auth → Register User** request\n3. Run the **🔐 Auth → Login** request (token auto-saves)\n4. Test other endpoints!\n\n**Base URL:** http://localhost:3000",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "✅ Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('user_id', response.data.user._id);",
+									"    pm.environment.set('user_email', response.data.user.email);",
+									"    console.log('✅ User registered successfully!');",
+									"    console.log('📧 Email:', response.data.user.email);",
+									"    console.log('🆔 User ID:', response.data.user._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{user_name}}\",\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register"]
+						},
+						"description": "Register a new user account. Email verification will be sent."
+					},
+					"response": []
+				},
+				{
+					"name": "🔑 Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('access_token', response.data.accessToken);",
+									"    pm.environment.set('user_id', response.data.user._id);",
+									"    pm.environment.set('user_role', response.data.user.role);",
+									"    console.log('✅ Login successful!');",
+									"    console.log('🔑 Access token saved');",
+									"    console.log('👤 User:', response.data.user.name);",
+									"    console.log('🎭 Role:', response.data.user.role);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login"]
+						},
+						"description": "Login with email and password. Returns access token and user info."
+					},
+					"response": []
+				},
+				{
+					"name": "🔄 Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('access_token', response.data.accessToken);",
+									"    console.log('✅ Token refreshed successfully!');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/refresh-token",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "refresh-token"]
+						},
+						"description": "Get a new access token using refresh token."
+					},
+					"response": []
+				},
+				{
+					"name": "🚪 Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    pm.environment.unset('access_token');",
+									"    console.log('✅ Logged out successfully!');",
+									"    console.log('🔑 Access token cleared');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "logout"]
+						},
+						"description": "Logout and invalidate tokens."
+					},
+					"response": []
+				},
+				{
+					"name": "✉️ Verify Email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/auth/verify-email?token={{verification_token}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "verify-email"],
+							"query": [
+								{
+									"key": "token",
+									"value": "{{verification_token}}",
+									"description": "Email verification token"
+								}
+							]
+						},
+						"description": "Verify email address using token sent via email."
+					},
+					"response": []
+				},
+				{
+					"name": "🔐 Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{user_email}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/forgot-password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "forgot-password"]
+						},
+						"description": "Request password reset email."
+					},
+					"response": []
+				},
+				{
+					"name": "🔑 Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"token\": \"{{reset_token}}\",\n  \"password\": \"NewPassword123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/reset-password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "reset-password"]
+						},
+						"description": "Reset password using token from email."
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints including register, login, logout, and password management."
+		},
+		{
+			"name": "👤 User Management",
+			"item": [
+				{
+					"name": "📋 Get My Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    console.log('✅ Profile retrieved');",
+									"    console.log('👤 Name:', response.data.name);",
+									"    console.log('📧 Email:', response.data.email);",
+									"    console.log('🎭 Role:', response.data.role);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "profile"]
+						},
+						"description": "Get current user profile information."
+					},
+					"response": []
+				},
+				{
+					"name": "✏️ Update Profile",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Name\",\n  \"phone\": \"+1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/profile",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "profile"]
+						},
+						"description": "Update current user profile."
+					},
+					"response": []
+				},
+				{
+					"name": "🔒 Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentPassword\": \"{{user_password}}\",\n  \"newPassword\": \"NewSecurePass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/users/change-password",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "change-password"]
+						},
+						"description": "Change current user password."
+					},
+					"response": []
+				},
+				{
+					"name": "👥 Get All Users (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users?page=1&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "role",
+									"value": "user",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all users (admin only). Supports pagination and filtering."
+					},
+					"response": []
+				},
+				{
+					"name": "🔍 Get User By ID (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{user_id}}"]
+						},
+						"description": "Get specific user by ID (admin only)."
+					},
+					"response": []
+				},
+				{
+					"name": "❌ Delete User (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "users", "{{user_id}}"]
+						},
+						"description": "Delete user account (admin only)."
+					},
+					"response": []
+				}
+			],
+			"description": "User management endpoints for profile, password, and admin operations."
+		},
+		{
+			"name": "📧 Notifications",
+			"item": [
+				{
+					"name": "📬 Get My Notifications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications?page=1&limit=20&unreadOnly=false",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "unreadOnly",
+									"value": "false"
+								}
+							]
+						},
+						"description": "Get user notifications with pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Mark as Read",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/{{notification_id}}/read",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "{{notification_id}}", "read"]
+						},
+						"description": "Mark notification as read."
+					},
+					"response": []
+				},
+				{
+					"name": "✅ Mark All as Read",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/read-all",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "read-all"]
+						},
+						"description": "Mark all notifications as read."
+					},
+					"response": []
+				},
+				{
+					"name": "🗑️ Delete Notification",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/notifications/{{notification_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "{{notification_id}}"]
+						},
+						"description": "Delete a notification."
+					},
+					"response": []
+				},
+				{
+					"name": "📤 Send Email (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"to\": \"user@example.com\",\n  \"subject\": \"Test Email\",\n  \"template\": \"generic\",\n  \"data\": {\n    \"title\": \"Hello!\",\n    \"message\": \"This is a test email from the notification service.\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/notifications/send-email",
+							"host": ["{{base_url}}"],
+							"path": ["api", "notifications", "send-email"]
+						},
+						"description": "Send email notification (admin only)."
+					},
+					"response": []
+				}
+			],
+			"description": "Notification management endpoints for emails and in-app notifications."
+		},
+		{
+			"name": "🏥 Health & Status",
+			"item": [
+				{
+					"name": "💚 API Gateway Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						},
+						"description": "Check API Gateway health status."
+					},
+					"response": []
+				},
+				{
+					"name": "🔐 Auth Service Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/health",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3001",
+							"path": ["health"]
+						},
+						"description": "Check Auth Service health status."
+					},
+					"response": []
+				},
+				{
+					"name": "👤 User Service Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3002/health",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3002",
+							"path": ["health"]
+						},
+						"description": "Check User Service health status."
+					},
+					"response": []
+				},
+				{
+					"name": "📧 Notification Service Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3003/health",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "3003",
+							"path": ["health"]
+						},
+						"description": "Check Notification Service health status."
+					},
+					"response": []
+				}
+			],
+			"description": "Health check endpoints for all services."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// 🔧 Pre-request script runs before each request",
+					"console.log('🚀 Sending request to:', pm.request.url);",
+					"",
+					"// Check if access token exists for protected routes",
+					"if (pm.request.headers.has('Authorization')) {",
+					"    const token = pm.environment.get('access_token');",
+					"    if (!token) {",
+					"        console.warn('⚠️ No access token found. Please login first.');",
+					"    }",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// 🧪 Test script runs after each request",
+					"const response = pm.response.json();",
+					"",
+					"// Log response status",
+					"if (pm.response.code >= 200 && pm.response.code < 300) {",
+					"    console.log('✅ Request successful:', pm.response.code);",
+					"} else if (pm.response.code >= 400) {",
+					"    console.error('❌ Request failed:', pm.response.code);",
+					"    console.error('Error:', response.message || 'Unknown error');",
+					"}",
+					"",
+					"// Log response time",
+					"console.log('⏱️ Response time:', pm.response.responseTime + 'ms');"
+				]
+			}
+		}
+	],
+	"variable": []
+}
