@@ -46,27 +46,38 @@ async function createProject(projectName, options) {
   try {
     await fs.ensureDir(targetDir);
 
-    // Copy template files
-    const templateDir = path.resolve(__dirname, '../template');
+    // Copy all files from npm package
+    const sourceDir = path.resolve(__dirname, '..');
     
-    if (!fs.existsSync(templateDir)) {
-      // If template doesn't exist, copy current directory structure
-      const sourceDir = path.resolve(__dirname, '..');
-      
-      // Files and directories to exclude
-      const excludes = [
-        'node_modules',
-        'bin',
-        'template',
-        'package.json',
-        '.git',
-        'logs',
-        '.DS_Store'
-      ];
+    // Files and directories to exclude from copying
+    const excludes = [
+      'node_modules',  // Don't copy root node_modules
+      'bin',           // Don't copy CLI itself
+      'package.json',  // Don't copy package metadata
+      'package-lock.json',
+      '.git',
+      '.npmignore',
+      'NPM_PUBLISH.md' // Internal docs
+    ];
 
-      await copyDirectory(sourceDir, targetDir, excludes);
-    } else {
-      await fs.copy(templateDir, targetDir);
+    // Copy all files except excludes
+    const items = await fs.readdir(sourceDir);
+    
+    for (const item of items) {
+      if (excludes.includes(item)) continue;
+      
+      const sourcePath = path.join(sourceDir, item);
+      const targetPath = path.join(targetDir, item);
+      
+      await fs.copy(sourcePath, targetPath, {
+        filter: (src) => {
+          // Don't copy node_modules from services (they'll install fresh)
+          if (src.includes('node_modules') && !src.endsWith('node_modules')) {
+            return false;
+          }
+          return true;
+        }
+      });
     }
 
     spinner.succeed(chalk.green('✅ Project structure created'));
