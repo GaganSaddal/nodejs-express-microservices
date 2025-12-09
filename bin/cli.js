@@ -41,13 +41,15 @@ async function createProject(projectName, options) {
   }
 
   // Create project directory
-  const spinner = ora('Creating project structure...').start();
+  const spinner = ora('Creating project structure...').start()
   
   try {
     await fs.ensureDir(targetDir);
 
     // Copy all files from npm package
     const sourceDir = path.resolve(__dirname, '..');
+    
+    spinner.text = `Copying files from ${sourceDir}...`;
     
     // Files and directories to exclude from copying
     const excludes = [
@@ -60,24 +62,39 @@ async function createProject(projectName, options) {
       'NPM_PUBLISH.md' // Internal docs
     ];
 
-    // Copy all files except excludes
+    // Check what files exist
     const items = await fs.readdir(sourceDir);
     
+    if (items.length === 0) {
+      spinner.fail(chalk.red('No files found in package!'));
+      console.error(chalk.yellow(`Source directory: ${sourceDir}`));
+      process.exit(1);
+    }
+    
+    // Copy all files except excludes
     for (const item of items) {
       if (excludes.includes(item)) continue;
       
       const sourcePath = path.join(sourceDir, item);
       const targetPath = path.join(targetDir, item);
       
-      await fs.copy(sourcePath, targetPath, {
-        filter: (src) => {
-          // Don't copy node_modules from services (they'll install fresh)
-          if (src.includes('node_modules') && !src.endsWith('node_modules')) {
-            return false;
+      try {
+        await fs.copy(sourcePath, targetPath, {
+          filter: (src) => {
+            // Don't copy node_modules subdirectories
+            if (src.includes('/node_modules/') || src.includes('\\node_modules\\')) {
+              return false;
+            }
+            // Don't copy log files
+            if (src.match(/\.log$/) || src.includes('/logs/') || src.includes('\\logs\\')) {
+              return false;
+            }
+            return true;
           }
-          return true;
-        }
-      });
+        });
+      } catch (err) {
+        console.warn(chalk.yellow(`Warning: Could not copy ${item}: ${err.message}`));
+      }
     }
 
     spinner.succeed(chalk.green('✅ Project structure created'));
