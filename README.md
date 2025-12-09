@@ -224,7 +224,7 @@ Headers: {
 ## 🧪 Testing
 
 ```bash
-# Run tests for all services /
+# Run tests for all services
 make test
 
 # Run tests for a specific service
