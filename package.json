@@ -49,8 +49,23 @@
   },
   "files": [
     "bin/",
-    "template/",
+    "auth-service/",
+    "api-gateway/",
+    "user-service/",
+    "notification-service/",
+    "shared/",
+    "docker-compose.yml",
+    "Makefile",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "QUICKSTART.md",
+    "SECURITY.md",
+    "POSTMAN_GUIDE.md",
+    "NPM_PUBLISH.md",
+    "postman_collection.json",
+    "postman_environment.json",
+    ".editorconfig",
+    ".eslintrc.js",
+    ".prettierrc"
   ]
 }

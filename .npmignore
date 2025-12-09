@@ -1,25 +1,14 @@
 # Development files
-node_modules/
-.DS_Store
 .vscode/
 .idea/
 
-# Logs
+# Logs (directories will be recreated)
 logs/
 *.log
 npm-debug.log*
 
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Docker
-.dockerignore
-
 # Git
 .git/
-.gitignore
 
 # Testing
 coverage/
@@ -35,4 +24,12 @@ temp/
 *.tmp
 
 # OS
+.DS_Store
 Thumbs.db
+
+# Node modules in services (will be installed fresh)
+**/node_modules/
+
+# NPM publish guides (not needed for installed package)
+GITHUB_SETUP.md
+PUBLISH_SUMMARY.md
