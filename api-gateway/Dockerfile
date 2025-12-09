@@ -18,9 +18,6 @@ COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 # Copy application code
 COPY --chown=nodejs:nodejs . .
 
-# Copy shared directory from parent
-COPY --chown=nodejs:nodejs ../shared ../shared
-
 RUN mkdir -p logs && chown -R nodejs:nodejs logs
 
 USER nodejs
