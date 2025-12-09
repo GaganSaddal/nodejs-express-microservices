@@ -46,26 +46,5 @@
     "fs-extra": "^11.2.0",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"
-  },
-  "files": [
-    "bin/",
-    "auth-service/",
-    "api-gateway/",
-    "user-service/",
-    "notification-service/",
-    "shared/",
-    "docker-compose.yml",
-    "Makefile",
-    "README.md",
-    "LICENSE",
-    "QUICKSTART.md",
-    "SECURITY.md",
-    "POSTMAN_GUIDE.md",
-    "NPM_PUBLISH.md",
-    "postman_collection.json",
-    "postman_environment.json",
-    ".editorconfig",
-    ".eslintrc.js",
-    ".prettierrc"
-  ]
+  }
 }
